@@ -5,4 +5,8 @@ dnspython==2.8.0
 jalali_core==1.0.0
 jdatetime==5.2.0
 pymongo==4.15.0
+python-dateutil==2.9.0.post0
+python-dotenv==1.1.1
+pytz==2025.2
+six==1.17.0
 sqlparse==0.5.3
