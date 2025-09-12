@@ -17,7 +17,7 @@ def jalali_label(g_date: _date, mode: str) -> str:
         return f"{jd.year} {PERSIAN_MONTHS[jd.month-1]}"
     if mode == 'weekly':
         week_no = jd.weeknumber()
-        return f"{jd.year} سال {week_no} هفته"
+        return f"هفته {week_no} سال {jd.year}"
     raise ValueError("invalid mode")
 
 
@@ -33,7 +33,7 @@ def label_to_gregorian_date(mode: str, label: str) -> _date:
         return jdatetime.date(y, idx, 1).togregorian()
     if mode == 'weekly':
         parts = label.split()
-        y, w = int(parts[0]), int(parts[2])
+        y, w = int(parts[1]), int(parts[3])
         start = jdatetime.date(y, 1, 1).togregorian()
         return start + timedelta(days=(w-1)*7)
     raise ValueError("invalid mode")

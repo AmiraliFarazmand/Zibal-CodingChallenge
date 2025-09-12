@@ -1,0 +1,25 @@
+{
+    "reset_password": {
+      "description": "Reset password notification",
+      "required_vars": ["name", "otp_code", "reset_link", "expiry_minutes", "merchantId"],
+      "channels": {
+        "sms": {
+          "fa": "سلام {name}، کد بازیابی شما: {otp_code}. این کد تا {expiry_minutes} دقیقه معتبر است.",
+          "en": "Hi {name}, your reset code is {otp_code}. It is valid for {expiry_minutes} minutes."
+        },
+        "email": {
+          "fa_subject": "بازنشانی رمز عبور",
+          "fa_text": "سلام {name}، برای بازنشانی رمز عبور از لینک زیر استفاده کنید:\n{reset_link}\nکد: {otp_code} (اعتبار: {expiry_minutes} دقیقه)",
+          "fa_html": "<p>سلام {name}،</p><p>برای بازنشانی رمز عبور <a href=\"{reset_link}\">اینجا</a> کلیک کنید.</p><p>کد: <b>{otp_code}</b> (اعتبار: {expiry_minutes} دقیقه)</p>",
+          "en_subject": "Reset your password",
+          "en_text": "Hi {name}, use this link to reset your password:\n{reset_link}\nCode: {otp_code} (valid {expiry_minutes} minutes)",
+          "en_html": "<p>Hi {name},</p><p>Click <a href=\"{reset_link}\">here</a> to reset your password.</p><p>Code: <b>{otp_code}</b> (valid {expiry_minutes} minutes)</p>"
+        },
+        "telegram": {
+          "fa": "{name}\nکد بازنشانی: {otp_code}\nمهلت: {expiry_minutes} دقیقه\nلینک: {reset_link}",
+          "en": "{name}\nReset code: {otp_code}\nValid: {expiry_minutes} minutes\nLink: {reset_link}"
+        }
+      }
+    }
+  }
+  
