@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     "rest_framework",
     "transaction",
+    "notify",
 ]
 
 MIDDLEWARE = [
@@ -120,6 +121,21 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser'],
 }
 
+# Mongo Configs
 MONGO_URI = getenv('MONGO_URI')
 MONGO_DB_NAME = getenv('MONGO_DB_NAME', 'zibal_db')
 SUMMARY_TTL_SECONDS = getenv("SUMMARY_TTL_SECONDS", 86400)
+
+#  Celery Configs
+CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+CELERY_TASK_ACKS_LATE = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_TASK_DEFAULT_QUEUE = "notifications"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+
+# Notifications configs
+NOTIFY_DEFAULT_LANG = "fa"
+NOTIFY_MAX_RETRIES = 5
+NOTIFY_BACKOFF_BASE = 2
+NOTIFY_BACKOFF_JITTER_SEC = 3
