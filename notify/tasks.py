@@ -44,6 +44,7 @@ def _recipient(channel: str):
     if channel == "telegram": return {"chat_id": random.randint(10_000_000, 99_999_999)}
     return {}
 
+
 @shared_task(bind=True, name="notify.send_reset_password", queue="notifications")
 def send_reset_password_task(self, *, merchant_id: str, channel: str, lang: str):
     # We compute attempt_no from how many logs exist for this task_id
@@ -56,7 +57,7 @@ def send_reset_password_task(self, *, merchant_id: str, channel: str, lang: str)
     prov = _provider(channel)
     rcpt = _recipient(channel)
 
-    # for logging; calculate size of text
+    # for logging; calculate size of text and other data
     req_meta = {"provider": prov.name}
     if channel == "sms":
         req_meta.update({"to": rcpt["phone"], "size": len(payload["text"])})
@@ -70,6 +71,7 @@ def send_reset_password_task(self, *, merchant_id: str, channel: str, lang: str)
     attempt_no = logs.count_documents({"task_id": task_id}) + 1
 
     try:
+        print("".join(["\n", "#"*10,"\n",'\t'*2,payload["text"],"\n","#"*10,"\n"]))
         if channel == "sms":
             resp = prov.send(text=payload["text"], phone=rcpt["phone"])
         elif channel == "email":
@@ -95,7 +97,7 @@ def send_reset_password_task(self, *, merchant_id: str, channel: str, lang: str)
                     request_meta=req_meta, response_meta=None, error=str(e))
 
         # retry policy
-        max_retries = int(getattr(settings, "NOTIFY_MAX_RETRIES", 5))
+        max_retries = int(getattr(settings, "NOTIFY_MAX_RETRIES", 3))
         base = int(getattr(settings, "NOTIFY_BACKOFF_BASE", 2))
         jitter = int(getattr(settings, "NOTIFY_BACKOFF_JITTER_SEC", 3))
 

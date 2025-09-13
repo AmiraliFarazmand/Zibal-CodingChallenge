@@ -1,5 +1,6 @@
 import random
 from dataclasses import dataclass
+from time import sleep
 
 class TransientError(Exception): pass
 class PermanentError(Exception): pass
@@ -7,11 +8,12 @@ class PermanentError(Exception): pass
 @dataclass
 class SMSProvider:
     name: str = "local_sms"
-    fail_rate: float = 0.1
+    fail_rate: float = 0.95   # Note that the fail rate is extremely high for this channel 
     def send(self, *, text: str, phone: str):
+        # sleep(50.111)
         if not phone or not phone.startswith("+"):
             raise PermanentError("invalid phone")
-        if random.random() < self.fail_rate:  # simulate flaky network
+        if random.random() < self.fail_rate:  
             raise TransientError("SMS gateway timeout")
         return {"provider_id": f"sms-{random.randint(100000, 999999)}"}
 
