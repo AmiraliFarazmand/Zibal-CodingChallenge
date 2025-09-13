@@ -4,6 +4,7 @@ services:
     container_name: zibal_mongodb
     ports:
       - "27017:27017"
+    command: ["--quiet", "--bind_ip_all"]   # quieter logs
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: secret
@@ -16,9 +17,20 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 })' || exit 1"]
       interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:latest
+    container_name: zibal_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 10s
       timeout: 3s
-      retries: 1
-      start_period: 20s
+      retries: 5
 
   api:
     build:
@@ -30,11 +42,43 @@ services:
       - "8000:8000"
     volumes:
       - .:/app:delegated  
+    # environment:
+    #   # override inside containers to hit service names
+    #   CELERY_BROKER_URL: redis://redis:6379/0
+    #   CELERY_RESULT_BACKEND: redis://redis:6379/0
+    #   # point Django/PyMongo to Mongo with auth
+    #   MONGO_URI: mongodb://admin:secret@mongodb:27017/?authSource=admin
+    #   MONGO_DB_NAME: zibal_db      
     depends_on:
       mongodb:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     command: >
       python manage.py runserver 0.0.0.0:8000
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zibal_worker
+    env_file: .env
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      MONGO_URI: mongodb://admin:secret@mongodb:27017/?authSource=admin
+      MONGO_DB_NAME: zibal_db
+      # Optional: tune retry/backoff via env
+      NOTIFY_MAX_RETRIES: 5
+      NOTIFY_BACKOFF_BASE: 2
+      NOTIFY_BACKOFF_JITTER_SEC: 3
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      celery -A config worker -l info -Q notifications
 
 volumes:
   mongo_data:

@@ -11,11 +11,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy only application code
+# Copy app code
 COPY manage.py ./manage.py
 COPY mongo.py ./mongo.py
 COPY config ./config
 COPY transaction ./transaction
+COPY notify ./notify 
 
-# Use Django dev server in dev; switch to gunicorn in prod
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
