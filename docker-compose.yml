@@ -42,13 +42,6 @@ services:
       - "8000:8000"
     volumes:
       - .:/app:delegated  
-    # environment:
-    #   # override inside containers to hit service names
-    #   CELERY_BROKER_URL: redis://redis:6379/0
-    #   CELERY_RESULT_BACKEND: redis://redis:6379/0
-    #   # point Django/PyMongo to Mongo with auth
-    #   MONGO_URI: mongodb://admin:secret@mongodb:27017/?authSource=admin
-    #   MONGO_DB_NAME: zibal_db      
     depends_on:
       mongodb:
         condition: service_healthy

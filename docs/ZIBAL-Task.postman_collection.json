@@ -1,0 +1,333 @@
+{
+	"info": {
+		"_postman_id": "c805df08-bc56-42b5-972d-0cf05b739ff8",
+		"name": "ZIBAL-Task",
+		"description": "Postman collection for Zibal code challenge;\n\nif there is explanation needed for any of the requests, it would be commented out at the first line of request body or in the name of that request!",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26814579"
+	},
+	"item": [
+		{
+			"name": "localhost",
+			"item": [
+				{
+					"name": "transactions/report/",
+					"item": [
+						{
+							"name": "no merchant",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    // \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/"
+							},
+							"response": []
+						},
+						{
+							"name": "with merchant",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/"
+							},
+							"response": []
+						},
+						{
+							"name": "miss mode or type",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    // \"type\":\"count\"\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/"
+							},
+							"response": []
+						},
+						{
+							"name": "wrong merchant ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"merchantId\": \"@@a69a2d18f9347bd89d5f$$\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/"
+							},
+							"response": []
+						},
+						{
+							"name": "not existing merchant",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"merchantId\": \"11119a2d1111347111111188\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/"
+							},
+							"response": []
+						}
+					],
+					"description": "Reads from Transaction collection"
+				},
+				{
+					"name": "transactions/report/cached/",
+					"item": [
+						{
+							"name": "no merchant",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    // \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/cached/"
+							},
+							"response": []
+						},
+						{
+							"name": "with merchant",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Try it out before and after running the following command:\n//          $  python manage.py build_transaction_summary --merchant-id 63a69a2d18f9347bd89d5f88\n{\n    \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/cached/"
+							},
+							"response": []
+						},
+						{
+							"name": "miss mode or type",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    // \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/cached"
+							},
+							"response": []
+						},
+						{
+							"name": "wrong merchant ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"merchantId\": \"@@a69a2d18f9347bd89d5f$$\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/cached/"
+							},
+							"response": []
+						},
+						{
+							"name": "not existing merchant",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// As you have seen it returns empty; found an approach to redirect to the first API in such cases, but didn't make it delivered. \n \n{\n    \"merchantId\": \"11119a2d1111347111111188\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/transactions/report/cached/"
+							},
+							"response": []
+						}
+					],
+					"description": "Reads from Transaction collection"
+				},
+				{
+					"name": "/notify/reset-password/",
+					"item": [
+						{
+							"name": "wrong bson.objectID",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"merchantId\":\"@@@69a2d18f9347bd89d5@@@\",\n    \"channel\" : \"sms\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/notify/reset-password/"
+							},
+							"response": []
+						},
+						{
+							"name": "wrong channel",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"merchantId\":\"63a69a2d18f9347bd89d5f88\",\n    \"channel\" : \"IDK\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/notify/reset-password/"
+							},
+							"response": []
+						},
+						{
+							"name": "success email",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Take a look at the console of where you are running Celery on. it will show the text message it creates from related template.  More detail is provided on \"success telegram\" request\n{\n    \"merchantId\":\"63a69a2d18f9347bd89d5f88\",\n    \"channel\" : \"email\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/notify/reset-password/"
+							},
+							"response": []
+						},
+						{
+							"name": "provider fails",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Since the code in the providers.py for SMSProvider has high fail rate; observe the db and celery console after this request \n{\n    \"merchantId\":\"63a69a2d18f9347bd89d5f88\",\n    \"channel\" : \"sms\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/notify/reset-password/"
+							},
+							"response": []
+						},
+						{
+							"name": "success telegram",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// Just like the email channel it would probably(90%) run successfully maybe on first try, and it will log the text it sent through the channel(in the console where we run celery);\n//  in the mongodb collection we store \"request_meta\" based on the channel it needs; Note it fills with dummy data provided by Faker package! take a look, because the dummy data is created on \"send_reset_password_task\", on retries it provides new dummy data -___-\n{\n    \"merchantId\":\"63a69a2d18f9347bd89d5f88\",\n    \"channel\" : \"telegram\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/notify/reset-password/"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
