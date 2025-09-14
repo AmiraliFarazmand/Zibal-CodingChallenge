@@ -1,5 +1,6 @@
 import random
 from celery import shared_task
+from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
 from faker import Faker
 
@@ -46,7 +47,7 @@ def _recipient(channel: str):
 
 
 @shared_task(bind=True, name="notify.send_reset_password", queue="notifications")
-def send_reset_password_task(self, *, merchant_id: str, channel: str, lang: str):
+def send_reset_password_task(self, merchant_id: str, channel: str, lang: str, *args, **kwargs):
     # We compute attempt_no from how many logs exist for this task_id
     from mongo import get_collection
     task_id = self.request.id
@@ -77,7 +78,8 @@ def send_reset_password_task(self, *, merchant_id: str, channel: str, lang: str)
         elif channel == "email":
             resp = prov.send(subject=payload["subject"], text=payload["text"], html=payload["html"], email=rcpt["email"])
         else:
-            resp = prov.send(text=payload["text"], chat_id=rcpt["chat_id"])
+            chat_id = kwargs.get("chat_id", rcpt["chat_id"])
+            resp = prov.send(text=payload["text"], chat_id=chat_id)
 
         # success
         log_attempt(task_id=task_id, channel=channel, merchant_id=merchant_id, lang=lang,
@@ -91,7 +93,7 @@ def send_reset_password_task(self, *, merchant_id: str, channel: str, lang: str)
                     request_meta=req_meta, response_meta=None, error=str(e))
         return {"ok": False, "error": str(e)}
 
-    except TransientError as e:
+    except (TransientError, SoftTimeLimitExceeded) as e:
         log_attempt(task_id=task_id, channel=channel, merchant_id=merchant_id, lang=lang,
                     attempt_no=attempt_no, status="failed", provider=prov.name,
                     request_meta=req_meta, response_meta=None, error=str(e))

@@ -8,9 +8,9 @@ class PermanentError(Exception): pass
 @dataclass
 class SMSProvider:
     name: str = "local_sms"
-    fail_rate: float = 0.95   # Note that the fail rate is extremely high for this channel 
-    def send(self, *, text: str, phone: str):
-        # sleep(50.111)
+    fail_rate: float = 0.15   # Note that the fail rate is extremely high for this channel 
+    def send(self,text: str, phone: str):
+        sleep(12.11) # Observe the timeout situation
         if not phone or not phone.startswith("+"):
             raise PermanentError("invalid phone")
         if random.random() < self.fail_rate:  
@@ -21,7 +21,7 @@ class SMSProvider:
 class EmailProvider:
     name: str = "local_email"
     fail_rate: float = 0.1
-    def send(self, *, subject: str, text: str, html: str, email: str):
+    def send(self, subject: str, text: str, html: str, email: str):
         if not email or "@" not in email:
             raise PermanentError("invalid email")
         if random.random() < self.fail_rate:
@@ -32,7 +32,7 @@ class EmailProvider:
 class TelegramProvider:
     name: str = "local_telegram"
     fail_rate: float = 0.1
-    def send(self, *, text: str, chat_id: int):
+    def send(self, text: str, chat_id: int):
         if not isinstance(chat_id, int):
             raise PermanentError("invalid chat_id")
         if random.random() < self.fail_rate:

@@ -15,3 +15,9 @@ class ResetPasswordRequestSerializer(serializers.Serializer):
     merchantId = ObjectIdField(required=True)
     channel = serializers.ChoiceField(choices=["sms", "email", "telegram"])
     lang = serializers.ChoiceField(choices=["fa", "en"], required=False, default=None)
+
+
+class ResetPasswordRequestTelegramSerializer(serializers.Serializer):
+    merchantId = ObjectIdField(required=True)
+    chat_id = serializers.FloatField(required=True)
+    lang = serializers.ChoiceField(choices=["fa", "en"], required=False, default=None)
