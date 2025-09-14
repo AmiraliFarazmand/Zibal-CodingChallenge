@@ -44,7 +44,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"raw": "{\n    \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    \"type\":\"count\",\n    \"mode\":\"monthly\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -155,7 +155,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "// Try it out before and after running the following command:\n//          $  python manage.py build_transaction_summary --merchant-id 63a69a2d18f9347bd89d5f88\n{\n    \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    \"type\":\"count\",\n    \"mode\":\"daily\"\n}",
+									"raw": "// Try it out before and after running the following command:\n//          $  python manage.py build_transaction_summary --merchant-id 63a69a2d18f9347bd89d5f88 --mode monthly\n{\n    \"merchantId\": \"63a69a2d18f9347bd89d5f88\",\n    \"type\":\"count\",\n    \"mode\":\"monthly\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -290,13 +290,31 @@
 							"response": []
 						},
 						{
-							"name": "provider fails",
+							"name": "English notification",
 							"request": {
 								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "// Since the code in the providers.py for SMSProvider has high fail rate; observe the db and celery console after this request \n{\n    \"merchantId\":\"63a69a2d18f9347bd89d5f88\",\n    \"channel\" : \"sms\"\n}",
+									"raw": "// Observe the logs of celery console(where we print out the text of notification) and see that it renders the English template message.\n{\n    \"merchantId\":\"63a69a2d18f9347bd89d5f88\",\n    \"channel\" : \"telegram\",\n    \"lang\": \"en\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/notify/reset-password/"
+							},
+							"response": []
+						},
+						{
+							"name": "provider fails(celery timeout)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// you can keep the sleep() from its provider to observe how it handles different exceptions\n{\n    \"merchantId\":\"63a69a2d18f9347bd89d5f88\",\n    \"channel\" : \"sms\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -322,6 +340,24 @@
 									}
 								},
 								"url": "{{localhost}}/notify/reset-password/"
+							},
+							"response": []
+						},
+						{
+							"name": "/telegram ->permenant Error example",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// conver teh chat_id into some float and observe how it handles the PermenantError and it doesn't attempt to retry;\n// I didn't use Integerfield on serializer to observe this situation \n{\n    \"merchantId\":\"63a69a2d18f9347bd89d5f88\",\n    \"chat_id\" : 5555555.5,\n    \"lang\": \"en\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{localhost}}/notify/reset-password/telegram/"
 							},
 							"response": []
 						}
