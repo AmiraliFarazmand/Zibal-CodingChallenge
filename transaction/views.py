@@ -5,9 +5,6 @@ from mongo import get_collection
 from .serializers import ReportQuerySerializer
 from .helpers import aggregate_daily_both, rollup_both, label_to_gregorian_date
 
-TZ = 'Asia/Tehran'
-
-
 
 class TransactionReportView(APIView):
     def get(self, request):

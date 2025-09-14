@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from mongo import get_collection
 
 def log_attempt(*, task_id: str, channel: str, merchant_id: str, lang: str,
@@ -16,5 +16,5 @@ def log_attempt(*, task_id: str, channel: str, merchant_id: str, lang: str,
         "request_meta": request_meta,       # sizes / recipient preview (no secrets)
         "response_meta": response_meta or {},
         "error": error,
-        "timestamp": datetime.utcnow(),
+        "timestamp": timezone.now(),
     })

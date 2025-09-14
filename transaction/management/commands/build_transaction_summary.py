@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from datetime import datetime
+from django.utils import timezone
 from pymongo import UpdateOne
 from mongo import get_collection
 from transaction.helpers import aggregate_daily_both, rollup_both
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             return
         # Aggregate once per day, then roll up
         daily = aggregate_daily_both(tx, match)
-        now = datetime.utcnow()
+        now = timezone.now()
         bulk = []
 
         for mode in modes:
