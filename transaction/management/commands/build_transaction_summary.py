@@ -2,9 +2,14 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils import timezone
 from pymongo import UpdateOne
+from pymongo.errors import OperationFailure
 from mongo import get_collection
 from transaction.helpers import aggregate_daily_both, rollup_both
 from bson import ObjectId
+
+TTL_INDEX_NAME = "ttl_createdAt"
+UNIQ_INDEX_NAME = "u_mode_label_merchant"
+
 
 class Command(BaseCommand):
     help = "Build/refresh TTL-backed summaries in `transaction_summary`."
@@ -15,28 +20,25 @@ class Command(BaseCommand):
 
     def handle(self, *args, **opts):
         modes = opts['mode'] or ['daily','weekly','monthly']
-        merchant = opts.get('merchant_id')
-        since = opts.get('since')
+        merchant_str = opts.get('merchant_id')
 
         tx = get_collection('transaction')
         out = get_collection('transaction_summary')
 
         # Ensure indexes (idempotent)
-        ttl_seconds = int(getattr(settings, 'SUMMARY_TTL_SECONDS', 86400))
-        out.create_index('createdAt', expireAfterSeconds=ttl_seconds, name='ttl_createdAt')
-        # Uniqueness per bucket: mode + label + merchantId (merchantId missing for global docs)
-        out.create_index([('mode',1), ('label_jalali',1), ('merchantId',1)], unique=True, name='u_mode_label_merchant')
-
+        ensure_indexes(out)
+        
         # Build match for raw scan
         match = {}
-        if merchant and ObjectId.is_valid(merchant):
-            merchant = ObjectId(merchant)
-            match['merchantId'] = merchant
-        if merchant and not ObjectId.is_valid(merchant):
-            self.stdout.write(self.style.ERROR_OUTPUT(
-                f"Not a valid merchant ID:{merchant}"
-            ))
-            return
+        merchant = None
+        if merchant_str:
+            if ObjectId.is_valid(merchant_str):
+                merchant = ObjectId(merchant_str)
+                match["merchantId"] = merchant
+            else:
+                self.stdout.write(self.style.ERROR(f"Not a valid merchant ID: {merchant_str}"))
+                return
+
         # Aggregate once per day, then roll up
         daily = aggregate_daily_both(tx, match)
         now = timezone.now()
@@ -72,3 +74,42 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             f"Upserted {len(bulk)} docs (modes={modes}, merchant={'ALL' if not merchant else merchant})"
         ))
+
+
+def ensure_indexes(out):
+    existing = {idx["name"]: idx for idx in out.list_indexes()}
+
+    # TTL index
+    ttl_seconds = int(getattr(settings, "SUMMARY_TTL_SECONDS", 86400))
+    if TTL_INDEX_NAME in existing:
+        current_ttl = existing[TTL_INDEX_NAME].get("expireAfterSeconds")
+        if current_ttl != ttl_seconds:
+            # Update TTL in place (preferred) or fall back to drop+recreate
+            try:
+                out.database.command(
+                    "collMod",
+                    out.name,
+                    index={"name": TTL_INDEX_NAME, "expireAfterSeconds": ttl_seconds},
+                )
+            except OperationFailure:
+                # Older server or mismatch: drop + recreate
+                out.drop_index(TTL_INDEX_NAME)
+                out.create_index(
+                    "createdAt",
+                    expireAfterSeconds=ttl_seconds,
+                    name=TTL_INDEX_NAME,
+                )
+    else:
+        out.create_index(
+            "createdAt",
+            expireAfterSeconds=ttl_seconds,
+            name=TTL_INDEX_NAME,
+        )
+
+    # Uniqueness per bucket: (mode, label_jalali, merchantId?)
+    if UNIQ_INDEX_NAME not in existing:
+        out.create_index(
+            [("mode", 1), ("label_jalali", 1), ("merchantId", 1)],
+            unique=True,
+            name=UNIQ_INDEX_NAME,
+        )
